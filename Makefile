@@ -35,9 +35,10 @@ node-run: node-build
 	docker network connect $(NETWORK_NAME) $(NODE_CONTAINER_NAME)
 
 node-get-pivate-key:
-	@docker cp `docker inspect jenkins-node | jq -r .[0].Id`:/home/jenkins/.ssh/id_rsa jenkins.pem
-	@chmod 600 jenkins.pem
+	@docker exec `docker inspect jenkins-node | jq -r .[0].Id` cat /home/jenkins/.ssh/id_rsa	
 
-node-ssh: node-get-pivate-key
+node-ssh:
+	@docker cp `docker inspect jenkins-node | jq -r .[0].Id`:/home/jenkins/.ssh/id_rsa ./jenkins.pem
+	@chmod 600 jenkins.pem
 	@ssh -i jenkins.pem -p `docker inspect jenkins-node | jq -r '.[0].NetworkSettings.Ports."22/tcp"[].HostPort'` jenkins@localhost
 	@unlink jenkins.pem
