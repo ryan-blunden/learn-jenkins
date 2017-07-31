@@ -34,7 +34,7 @@ node-run: node-build
 	docker run -d --name $(NODE_CONTAINER_NAME) --init -P $(NODE_IMAGE_NAME)
 	docker network connect $(NETWORK_NAME) $(NODE_CONTAINER_NAME)
 
-node-get-pivate-key:
+node-get-private-key:
 	@docker exec `docker inspect jenkins-node | jq -r .[0].Id` cat /home/jenkins/.ssh/id_rsa	
 
 node-ssh:
@@ -42,3 +42,7 @@ node-ssh:
 	@chmod 600 jenkins.pem
 	@ssh -i jenkins.pem -p `docker inspect jenkins-node | jq -r '.[0].NetworkSettings.Ports."22/tcp"[].HostPort'` jenkins@localhost
 	@unlink jenkins.pem
+
+node-ssh-root:
+	docker exec -it jenkins-node bash
+	
