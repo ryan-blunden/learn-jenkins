@@ -23,7 +23,7 @@ USER jenkins
 
 WORKDIR /home/jenkins
 
-RUN mkdir ~/.ssh && \
+RUN mkdir -p ~/.ssh && \
     chmod 700 .ssh && \
     cd ~/.ssh && \
     ssh-keygen -t rsa -b 4096 -f id_rsa -N "" -C "node@jenkins" && \

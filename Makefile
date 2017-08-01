@@ -46,3 +46,44 @@ node-ssh:
 node-ssh-root:
 	docker exec -it jenkins-node bash
 	
+##############
+#  DEV NODE  #
+##############
+
+DEV_IMAGE_NAME=dev-node
+DEV_CONTAINER_NAME=dev-node
+
+dev-node-build:
+	docker build -t $(DEV_IMAGE_NAME):latest dev
+
+dev-node-run: dev-node-build
+	docker run -di \
+		--name $(DEV_CONTAINER_NAME) \
+		-v $(APP_PATH):/usr/src/app \
+		-p 8081:8080 \
+		$(DEV_IMAGE_NAME)
+
+dev-node-terminal:
+	docker exec -it $(DEV_CONTAINER_NAME) bash
+
+dev-node-start:
+	docker start $(DEV_CONTAINER_NAME)
+
+dev-node-stop:
+	docker stop $(DEV_CONTAINER_NAME)
+
+dev-node-remove:
+	docker rm -f $(DEV_CONTAINER_NAME)
+
+
+###############
+#  UTILITIES  #
+###############
+
+ssh-key:
+	mkdir -p ~/.ssh && \
+    chmod 700 ~/.ssh && \
+    cd ~/.ssh && \
+    ssh-keygen -t rsa -b 4096 -f id_rsa -N "" -C "dev@node" && \
+    cat id_rsa.pub > authorized_keys && \
+    chmod 600 authorized_keys
