@@ -30,13 +30,12 @@ WORKDIR /home/jenkins
 
 COPY .ssh .ssh
 
-RUN chown -R jenkins:jenkins .ssh && \
-    chmod 700 .ssh && \
+RUN chmod 700 .ssh && \
     cd .ssh && \
     cat id_rsa.pub > authorized_keys && \
-    chmod 600 authorized_keys
+    chmod 600 authorized_keys && \
+    chown -R jenkins:jenkins ../.ssh
 
 EXPOSE 22 5000
 
 ENTRYPOINT ["/usr/sbin/sshd", "-D"]
-

@@ -5,7 +5,7 @@
 NETWORK_NAME=jenkins
 
 network-create:
-	docker network create $(NETWORK_NAME)
+	--ignore-errors docker network create $(NETWORK_NAME)
 
 ####################
 #  JENKINS MASTER  #
@@ -15,7 +15,7 @@ MASTER_NAME=jenkins-master
 MASTER_CONTAINER_NAME=jenkins-master
 TIMEZONE=UTC
 
-master-run:
+master-run: network-create
 	docker run -d --name $(MASTER_CONTAINER_NAME) -p 8080:8080 -p 50000:5000 -e JAVA_OPTS=-Dorg.apache.commons.jelly.tags.fmt.timeZone=$(TIMEZONE) -P jenkins
 	docker network connect $(NETWORK_NAME) $(MASTER_CONTAINER_NAME)
 
@@ -30,7 +30,7 @@ NODE_CONTAINER_NAME=jenkins-node
 node-build:
 	docker build -t $(NODE_IMAGE_NAME):latest node
 
-node-run: node-build
+node-run: node-build network-create
 	docker run -d --name $(NODE_CONTAINER_NAME) --init -P $(NODE_IMAGE_NAME)
 	docker network connect $(NETWORK_NAME) $(NODE_CONTAINER_NAME)
 
