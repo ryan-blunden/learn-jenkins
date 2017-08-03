@@ -1,7 +1,7 @@
 FROM centos:centos6
 
 RUN yum -y update && \
-    yum -y install gcc yum-utils builddep python wget nano git openssh-server openssh-clients && \
+    yum -y install make gcc yum-utils builddep python wget nano git openssh-server openssh-clients && \
     \
     chkconfig sshd on && service sshd start && \
     \
