@@ -1,10 +1,28 @@
 FROM centos:centos6
 
 RUN yum -y update && \
-    yum -y install make gcc yum-utils builddep python wget nano git openssh-server openssh-clients && \
+    yum -y install \
+        make \
+        shellcheck \
+        gcc \
+        yum-utils \
+        builddep \
+        python \
+        wget \
+        nano \
+        git \
+        openssh-server \
+        openssh-clients && \
+    \
+    yum -y install \
+        libtest-perl \
+        perl-Test-Harness \
+        perl-Test-Simple \
+        perl-Test-Exception \
+        perl-JSON perl-Perl-Critic && \
     \
     chkconfig sshd on && service sshd start && \
-    \
+
     wget https://www.python.org/ftp/python/3.5.3/Python-3.5.3.tgz && \
     tar xf Python-3.5.3.tgz && \
     cd Python-3.5.3 && \
