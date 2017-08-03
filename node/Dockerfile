@@ -1,16 +1,23 @@
 FROM centos:centos6
 
 RUN yum -y update && \
-    yum -y install wget nano openssh-server openssh-clients && \    
+    yum -y install gcc yum-utils builddep python wget nano git openssh-server openssh-clients && \
     \
     chkconfig sshd on && service sshd start && \
-    \ 
+    \
+    wget https://www.python.org/ftp/python/3.5.3/Python-3.5.3.tgz && \
+    tar xf Python-3.5.3.tgz && \
+    cd Python-3.5.3 && \
+    ./configure && \
+    make && \
+    make install && \
+    \
     wget --no-cookies --no-check-certificate --header "Cookie: oraclelicense=accept-securebackup-cookie" "http://download.oracle.com/otn-pub/java/jdk/8u144-b01/090f390dda5b47b9b721c7dfaa008135/jdk-8u144-linux-x64.rpm" -O /tmp/jdk-8-linux-x64.rpm && \
     yum -y install /tmp/jdk-8-linux-x64.rpm && \
     \
     yum clean all
 
-ENV JAVA_HOME /usr/java/latest    
+ENV JAVA_HOME /usr/java/latest
 
 # Jenkins is run with user `jenkins`, uid = 1000
 # This is because uid 1000 is almost always the first non-system user and will most likely match the host user uid.
@@ -19,20 +26,17 @@ RUN groupadd -g 1000 jenkins && \
     mkdir /home/jenkins/node && \
     chown jenkins:jenkins /home/jenkins/node
 
-USER jenkins 
-
 WORKDIR /home/jenkins
 
-RUN mkdir -p ~/.ssh && \
+COPY .ssh .ssh
+
+RUN chown -R jenkins:jenkins .ssh && \
     chmod 700 .ssh && \
-    cd ~/.ssh && \
-    ssh-keygen -t rsa -b 4096 -f id_rsa -N "" -C "node@jenkins" && \
+    cd .ssh && \
     cat id_rsa.pub > authorized_keys && \
-    chmod 600 authorized_keys && \
-    cat id_rsa
+    chmod 600 authorized_keys
 
-USER root
-
-EXPOSE 22
+EXPOSE 22 5000
 
 ENTRYPOINT ["/usr/sbin/sshd", "-D"]
+
