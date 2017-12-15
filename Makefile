@@ -5,7 +5,7 @@
 NETWORK_NAME=jenkins
 
 network-create:
-	--ignore-errors docker network create $(NETWORK_NAME)
+	-docker network create $(NETWORK_NAME)
 
 ####################
 #  JENKINS MASTER  #
